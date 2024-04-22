@@ -9,25 +9,27 @@ import org.apache.hadoop.mapreduce.Reducer;
 /**
  * Basic MapReduce Project - Reducer
  */
-public class ReducerBigData extends Reducer<
-                Text,           // Input key type (word)
-                IntWritable,    // Input value type (count of word)
-                Text,           // Output key type (word)
-                IntWritable> {  // Output value type (total count of word)
-
-    private IntWritable result = new IntWritable();
-
+class ReducerBigData extends Reducer<
+                Text,           // Input key type
+                IntWritable,    // Input value type
+                Text,           // Output key type
+                IntWritable> {  // Output value type
+    
     @Override
-    protected void reduce(Text key, Iterable<IntWritable> values, Context context)
-            throws IOException, InterruptedException {
-        // Sum up the counts for the same word
-        int sum = 0;
-        for (IntWritable val : values) {
-            sum += val.get();
-        }
-        result.set(sum);
+    
+    protected void reduce(
+        Text key, // Input key type
+        Iterable<IntWritable> values, // Input value type
+        Context context) throws IOException, InterruptedException {
 
-        // Output word and its total count
-        context.write(key, result);
+        int sum = 0;
+
+        // Sum up the counts for each word
+        for (IntWritable value : values) {
+            sum += value.get();
+        }
+        
+        // Emit the word with its total count
+        context.write(key, new IntWritable(sum));
     }
 }
